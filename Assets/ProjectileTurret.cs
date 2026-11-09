@@ -18,6 +18,10 @@ public class ProjectileTurret : MonoBehaviour
 
     List<Vector3> points = new List<Vector3>();
 
+    //new
+    [SerializeField] float maxTime = 5f;//cont calc till this time passed
+    [SerializeField] float timeInterval = 0.1f;//how often to calc position (line smoothness) 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,7 +35,8 @@ public class ProjectileTurret : MonoBehaviour
         TurnBase();
         RotateGun();
 
-        if (Input.GetButtonDown("Fire1"))
+        DrawTrajectory();//display trajectory 
+        if(Input.GetButtonDown("Fire1"))
             Fire();
     }
 
@@ -71,7 +76,7 @@ public class ProjectileTurret : MonoBehaviour
     float? CalculateTrajectory(Vector3 target, bool useLow)
     {
         Vector3 targetDir = target - barrelEnd.position;
-        
+
         float y = targetDir.y;
         targetDir.y = 0;
 
@@ -98,5 +103,38 @@ public class ProjectileTurret : MonoBehaviour
         }
         else
             return null;
+    }
+
+    //new for trajectpry 
+    void DrawTrajectory()
+    {
+        points.Clear();//clear prev points 
+
+        Vector3 startPosition = barrelEnd.position;//get starting point 
+        Vector3 velocity = projectileSpeed * barrelEnd.forward;//calculate velocity 
+        Vector3 acceleration = new Vector3(0, -gravity.y, 0);//gravity down
+        points.Add(startPosition);//starting pt as first pt in trajectry 
+
+        //calc future position 
+        for (float time = timeInterval; time <= maxTime; time += timeInterval)
+        {
+
+            Vector3 currentPosition = startPosition + velocity * time + 0.5f * acceleration * time * time;//p(t) = p0+v0t+1/2at2-> position = starting position + (velocity*time)+ (.5*acceleration*time^2)
+
+            Vector3 direction = currentPosition - points[points.Count - 1];//calc direction and dist between previous and current pt 
+
+            //check if trajectory hits something
+            if (Physics.Raycast(points[points.Count - 1], direction.normalized, out RaycastHit hit, direction.magnitude, targetLayer))
+            {
+                points.Add(hit.point);//add meeting pt to trajectory 
+                break;
+            }
+            points.Add(currentPosition);//add position to trajectory 
+        }
+
+        line.positionCount = points.Count;//num pts to display 
+        line.SetPositions(points.ToArray());//draw trajectory using pts 
+
+
     }
 }

@@ -2,7 +2,7 @@
 - Project name: Trajectory and Vector Reflection
 - Unity version: Unity 6000.0.51f1
 - Active game object:
-  - Name: Projectile Turret
+  - Name: Laser Turret
   - Tag: Untagged
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

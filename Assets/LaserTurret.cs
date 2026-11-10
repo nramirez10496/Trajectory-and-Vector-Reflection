@@ -78,7 +78,7 @@ public class LaserTurret : MonoBehaviour
             if (Physics.Raycast(startPoint, direction, out RaycastHit hit, 1000f, targetLayer))
             {
                 laserPoints.Add(hit.point);//add hit point
-                direction = direction - 2 * Vector3.Dot(direction, hit.normal) * hit.normal;//calc reflection w/ dot 
+                direction = direction - 2 * Vector3.Dot(direction, hit.normal) * hit.normal;//calc reflection w/ dot R = I -2(I*N) N -> reflected dir = laser dir -2(laser dir dot surface norm) surface norm
                 direction.Normalize();
                 startPoint = hit.point + direction * .01f;//avoid double hit
             }
